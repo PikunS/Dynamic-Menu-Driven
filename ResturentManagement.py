@@ -265,8 +265,90 @@ def BillMenu():
 		elif opt==3:
 			return
 # ------------------------ END BILL RELATED FUNCTION ---------------------------------
+# ------------------------ REPORT RELATED FUNCTION ---------------------------------
+def dailyReport():
+	global mycon
+	global mycur
+	dtv=input("Enter date to see the report in 'yyyy-mm-dd' ")
+	#dt=datetime.datetime.date(dtv)
+	mycur.execute(f"select * from sales where d_of_sales='{dtv}'")
+	recs = mycur.fetchall()
+	if recs:
+		print(("-"*24)+' DOWN TOWN CAFE '+("-"*24))
+		print(f'Date:{dtv}')
+		print("-"*70)
+		daytot=0
+		print(f"{'Bill No':40s}{'Amount'}")
+		for rec in recs:
+			print(f"{rec[0]:6d}{'':30s}{rec[1]:10.2f}")
+			daytot+=rec[1]
+		print("-"*70)
+		print(f"{'Total Amount'}{daytot:>34.2f}")
+		print("-"*70)
+	else:
+		print("Sorry No Transaction done in this date")
+		
+def monthlyReport():
+	global mycon
+	global mycur
+	dtv=input("Enter Month Number to see the report in 'mm' ")
+	#dt=datetime.datetime.date(dtv)
+	mycur.execute(f"select d_of_sales, sum(total_amt) from sales where month(d_of_sales)={int(dtv)} group by d_of_sales")
+	recs = mycur.fetchall()
+	if recs:
+		print(("-"*24)+' DOWN TOWN CAFE '+("-"*24))
+		print(f'Month:{dtv}')
+		print("-"*70)
+		daytot=0
+		print(f"{'Date':40s}{'Amount'}")
+		for rec in recs:
+			print(f"{str(rec[0]):20s}{'':16s}{rec[1]:10.2f}")
+			daytot+=rec[1]
+		print("-"*70)
+		print(f"{'Total Amount'}{daytot:>34.2f}")
+		print("-"*70)
+	else:
+		print("Sorry No Transaction done in this Month")
+def yearlyReport():
+	global mycon
+	global mycur
+	dtv=input("Enter Year Value to see the report in 'yyyy' ")
+	#dt=datetime.datetime.date(dtv)
+	mycur.execute(f"select month(d_of_sales), sum(total_amt) from sales where year(d_of_sales)={int(dtv)} group by month(d_of_sales)")
+	recs = mycur.fetchall()
+	if recs:
+		print(("-"*24)+' DOWN TOWN CAFE '+("-"*24))
+		print(f'Year:{dtv}')
+		print("-"*70)
+		daytot=0
+		print(f"{'Month':40s}{'Amount'}")
+		for rec in recs:
+			print(f"{str(rec[0]):20s}{'':16s}{rec[1]:10.2f}")
+			daytot+=rec[1]
+		print("-"*70)
+		print(f"{'Total Amount'}{daytot:>34.2f}")
+		print("-"*70)
+	else:
+		print("Sorry No Transaction done in this Year")
+
 def incomeReportMenu():
-	pass
+	while True:
+		print("1: Daily Report")
+		print("2: Monthly Report")
+		print("3: Yearly Report")
+		print("4: Return to Main Menu")
+		opt=int(input("Enter Your Choice : "))
+		if opt==1:
+			dailyReport()
+		elif opt==2:
+			monthlyReport()
+		elif opt==3:
+			yearlyReport()
+		elif opt==4:
+			return
+		else:
+			print("Wrong Choice..")
+# ------------------------ END OF REPORT RELATED FUNCTION ---------------------------------
 # ------------------------ MAIN MENU ---------------------------------
 def MainMenu():
 	while True:
